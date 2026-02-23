@@ -221,45 +221,95 @@
             <!-- TAB 3: Vape Liquid -->
             <div id="calc-vape" class="tab-pane">
                 <div class="pane calc-pane">
-                    <h3>Vape Liquid Mixer</h3>
-                    <div class="input-group">
-                        <div class="input-field">
-                            <label for="vape-volume">Target Volume (ml)</label>
-                            <input type="number" id="vape-volume" placeholder="e.g. 60">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin-bottom: 0;">Vape Liquid</h3>
+                        <select id="vape-mode" class="input-field"
+                            style="margin-bottom: 0; padding: 0.4rem 0.5rem; width: auto; font-size: 0.85rem; border-color: var(--pane-border); background: var(--input-bg); color: var(--text-main); border-radius: 8px;">
+                            <option value="shortfill">Shortfill / Nic Shot</option>
+                            <option value="diy">DIY Mix (From Scratch)</option>
+                        </select>
+                    </div>
+
+                    <!-- Shortfill Inputs -->
+                    <div id="vape-sf-inputs">
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label for="vape-sf-vol">Starting / Shortfill Volume (ml)</label>
+                                <input type="number" id="vape-sf-vol" placeholder="e.g. 50">
+                            </div>
+                            <div class="input-field">
+                                <label for="vape-sf-target">Target Nic (mg/ml)</label>
+                                <input type="number" id="vape-sf-target" placeholder="e.g. 3">
+                            </div>
                         </div>
-                        <div class="input-field">
-                            <label for="vape-flavor">Flavor (%)</label>
-                            <input type="number" id="vape-flavor" placeholder="e.g. 15">
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label for="vape-sf-nic">Nic Shot Strength (mg/ml)</label>
+                                <input type="number" id="vape-sf-nic" placeholder="e.g. 18">
+                            </div>
                         </div>
                     </div>
-                    <div class="input-group">
-                        <div class="input-field">
-                            <label for="vape-base-nic">Base Nic (mg/ml)</label>
-                            <input type="number" id="vape-base-nic" placeholder="e.g. 72">
+
+                    <!-- DIY Inputs -->
+                    <div id="vape-diy-inputs" style="display: none;">
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label for="vape-volume">Target Volume (ml)</label>
+                                <input type="number" id="vape-volume" placeholder="e.g. 60">
+                            </div>
+                            <div class="input-field">
+                                <label for="vape-flavor">Flavor (%)</label>
+                                <input type="number" id="vape-flavor" placeholder="e.g. 15">
+                            </div>
                         </div>
-                        <div class="input-field">
-                            <label for="vape-target-nic">Target Nic (mg/ml)</label>
-                            <input type="number" id="vape-target-nic" placeholder="e.g. 3">
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label for="vape-base-nic">Base Nic (mg/ml)</label>
+                                <input type="number" id="vape-base-nic" placeholder="e.g. 72">
+                            </div>
+                            <div class="input-field">
+                                <label for="vape-target-nic">Target Nic (mg/ml)</label>
+                                <input type="number" id="vape-target-nic" placeholder="e.g. 3">
+                            </div>
                         </div>
                     </div>
 
                     <div class="pane" style="margin-top: 1rem; padding: 1rem; background: var(--res-bg);">
-                        <h4 style="margin-bottom: 0.5rem;">Recipe:</h4>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                            <span style="color: var(--text-muted);">Nicotine Base:</span>
-                            <span id="vape-res-nic" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                        <h4 style="margin-bottom: 0.8rem; font-size: 0.95rem;">Result:</h4>
+
+                        <!-- Shortfill Recipe Output -->
+                        <div id="vape-res-sf-container">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-muted);">Add Nicotine Shot:</span>
+                                <span id="vape-res-sf-add"
+                                    style="font-weight: 600; color: var(--accent-color); font-size: 1.1rem;">--
+                                    ml</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--pane-border);">
+                                <span style="color: var(--text-muted);">Total Mixed Volume:</span>
+                                <span id="vape-res-sf-total" style="font-weight: 600; color: var(--text-main);">--
+                                    ml</span>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                            <span style="color: var(--text-muted);">Flavor Concentrate:</span>
-                            <span id="vape-res-flavor" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+
+                        <!-- DIY Recipe Output -->
+                        <div id="vape-res-diy-container" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="color: var(--text-muted);">Nicotine Base:</span>
+                                <span id="vape-res-nic" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <span style="color: var(--text-muted);">Flavor Concentrate:</span>
+                                <span id="vape-res-flavor" style="font-weight: 600; color: var(--text-main);">--
+                                    ml</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">PG/VG Base:</span>
+                                <span id="vape-res-base" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-muted);">PG/VG Base:</span>
-                            <span id="vape-res-base" style="font-weight: 600; color: var(--text-main);">-- ml</span>
-                        </div>
-                    </div>
-                    <div class="calc-result" id="res-vape" style="display: none;">
-                        <span class="val">--</span><span class="sub">--</span>
                     </div>
                 </div>
             </div> <!-- End Vape Tab -->

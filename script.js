@@ -58,10 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const ohmsW = document.getElementById('ohms-w');
 
     // Vape Liquid
+    const vapeMode = document.getElementById('vape-mode');
+    const vapeSfInputs = document.getElementById('vape-sf-inputs');
+    const vapeDiyInputs = document.getElementById('vape-diy-inputs');
+
+    // SF Inputs
+    const vapeSfVol = document.getElementById('vape-sf-vol');
+    const vapeSfNic = document.getElementById('vape-sf-nic');
+    const vapeSfTarget = document.getElementById('vape-sf-target');
+
+    // DIY Inputs
     const vapeVol = document.getElementById('vape-volume');
     const vapeFlavor = document.getElementById('vape-flavor');
     const vapeBaseNic = document.getElementById('vape-base-nic');
     const vapeTargetNic = document.getElementById('vape-target-nic');
+
+    // Result Containers
+    const vapeResSfContainer = document.getElementById('vape-res-sf-container');
+    const vapeResDiyContainer = document.getElementById('vape-res-diy-container');
 
     // Temperature
     const tempC = document.getElementById('temp-c');
@@ -321,25 +335,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function calcVape() {
-        const vol = parseFloat(vapeVol.value);
-        const flavPct = parseFloat(vapeFlavor.value) || 0;
-        const baseNic = parseFloat(vapeBaseNic.value) || 0;
-        const targetNic = parseFloat(vapeTargetNic.value) || 0;
+        if (vapeMode.value === 'shortfill') {
+            const vol = parseFloat(vapeSfVol.value);
+            const nicShot = parseFloat(vapeSfNic.value);
+            const targetNic = parseFloat(vapeSfTarget.value);
 
-        if (!isNaN(vol) && targetNic <= baseNic) {
-            const nicMl = baseNic > 0 ? (targetNic * vol) / baseNic : 0;
-            const flavMl = (flavPct / 100) * vol;
-            const baseMl = vol - nicMl - flavMl;
+            if (!isNaN(vol) && !isNaN(nicShot) && !isNaN(targetNic)) {
+                if (nicShot > targetNic) {
+                    const nicMl = (vol * targetNic) / (nicShot - targetNic);
+                    const totalMl = vol + nicMl;
 
-            if (baseMl >= 0) {
-                document.getElementById('vape-res-nic').textContent = fNum(nicMl) + ' ml';
-                document.getElementById('vape-res-flavor').textContent = fNum(flavMl) + ' ml';
-                document.getElementById('vape-res-base').textContent = fNum(baseMl) + ' ml';
-
-                // Track internally without typical val/sub result pane
-                pushHistory("Vape Liquid", `${fNum(vol)}ml`, `Nic: ${fNum(nicMl)}ml, Flix: ${fNum(flavMl)}ml`);
+                    document.getElementById('vape-res-sf-add').textContent = fNum(nicMl) + ' ml';
+                    document.getElementById('vape-res-sf-total').textContent = fNum(totalMl) + ' ml';
+                    pushHistory("Shortfill Vape", `${fNum(vol)}ml -> ${fNum(totalMl)}ml`, `Added ${fNum(nicMl)}ml of Nic`);
+                } else if (targetNic === 0) {
+                    document.getElementById('vape-res-sf-add').textContent = '0 ml';
+                    document.getElementById('vape-res-sf-total').textContent = fNum(vol) + ' ml';
+                } else {
+                    document.getElementById('vape-res-sf-add').textContent = 'Error';
+                    document.getElementById('vape-res-sf-total').textContent = '-- ml';
+                }
             } else {
-                ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = 'Error');
+                document.getElementById('vape-res-sf-add').textContent = '-- ml';
+                document.getElementById('vape-res-sf-total').textContent = '-- ml';
+            }
+        } else {
+            const vol = parseFloat(vapeVol.value);
+            const flavPct = parseFloat(vapeFlavor.value) || 0;
+            const baseNic = parseFloat(vapeBaseNic.value) || 0;
+            const targetNic = parseFloat(vapeTargetNic.value) || 0;
+
+            if (!isNaN(vol) && targetNic <= baseNic) {
+                const nicMl = baseNic > 0 ? (targetNic * vol) / baseNic : 0;
+                const flavMl = (flavPct / 100) * vol;
+                const baseMl = vol - nicMl - flavMl;
+
+                if (baseMl >= 0) {
+                    document.getElementById('vape-res-nic').textContent = fNum(nicMl) + ' ml';
+                    document.getElementById('vape-res-flavor').textContent = fNum(flavMl) + ' ml';
+                    document.getElementById('vape-res-base').textContent = fNum(baseMl) + ' ml';
+
+                    pushHistory("DIY Vape", `${fNum(vol)}ml`, `Nic: ${fNum(nicMl)}ml, Flix: ${fNum(flavMl)}ml`);
+                } else {
+                    ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = 'Error');
+                }
+            } else {
+                ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = '-- ml');
             }
         }
     }
@@ -392,9 +433,25 @@ document.addEventListener('DOMContentLoaded', () => {
     [fracNum, fracDen].forEach(i => i.addEventListener('input', calcFrac));
 
     [ohmsV, ohmsR, ohmsI, ohmsW].forEach(i => i.addEventListener('input', calcOhms));
-    [vapeVol, vapeFlavor, vapeBaseNic, vapeTargetNic].forEach(i => i.addEventListener('input', calcVape));
     [tempC, tempF, tempK].forEach(i => i.addEventListener('input', calcTemp));
     [distMi, distKm, distM, distFt, distIn].forEach(i => i.addEventListener('input', calcDist));
+
+    [vapeVol, vapeFlavor, vapeBaseNic, vapeTargetNic, vapeSfVol, vapeSfNic, vapeSfTarget].forEach(i => i.addEventListener('input', calcVape));
+
+    vapeMode.addEventListener('change', () => {
+        if (vapeMode.value === 'shortfill') {
+            vapeSfInputs.style.display = 'block';
+            vapeResSfContainer.style.display = 'block';
+            vapeDiyInputs.style.display = 'none';
+            vapeResDiyContainer.style.display = 'none';
+        } else {
+            vapeSfInputs.style.display = 'none';
+            vapeResSfContainer.style.display = 'none';
+            vapeDiyInputs.style.display = 'block';
+            vapeResDiyContainer.style.display = 'block';
+        }
+        calcVape();
+    });
 
     // Clear functionality
     clearBtn.addEventListener('click', () => {
@@ -410,6 +467,8 @@ document.addEventListener('DOMContentLoaded', () => {
         calcVape();
 
         ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = '-- ml');
+        document.getElementById('vape-res-sf-add').textContent = '-- ml';
+        document.getElementById('vape-res-sf-total').textContent = '-- ml';
     });
 
     // Preset functionality
