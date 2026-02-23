@@ -1,4 +1,4 @@
-const CACHE_NAME = 'percent-calc-v1';
+const CACHE_NAME = 'percent-calc-v2';
 const ASSETS = [
     './',
     './index.html',
@@ -16,13 +16,19 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
+
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
+                // If network fetch successful, update the cache
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+                return response;
+            })
+            .catch(() => {
+                // Fallback to cache if offline
+                return caches.match(event.request);
             })
     );
 });
