@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Percentage Calculator</title>
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Top Nav Action Bar -->
+    <header class="app-header">
+        <h1>Percentage Calculator</h1>
+        <div class="header-actions">
+            <button id="theme-toggle" class="header-btn" title="Toggle Theme" aria-label="Toggle Theme">
+                <!-- SVG Icon set in JS based on theme -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="theme-icon-light">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="theme-icon-dark" style="display:none;">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button id="history-toggle" class="header-btn" title="View History" aria-label="View History">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+
+        <!-- Left Column: Inputs -->
+        <main class="calculator-container">
+            <!-- Reference -->
+            <div class="pane section-pane">
+                <div class="input-field">
+                    <label for="reference-val">Reference (Optional)</label>
+                    <input type="text" id="reference-val" placeholder="e.g. Q3 Earnings or Shopping">
+                </div>
+            </div>
+
+            <!-- 1. Percentage Change -->
+            <div class="pane calc-pane">
+                <h3>1. Percentage Change</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="change-prev">Previous Value</label>
+                        <input type="number" id="change-prev" placeholder="e.g. 100">
+                    </div>
+                    <div class="input-field">
+                        <label for="change-new">New Value</label>
+                        <input type="number" id="change-new" placeholder="e.g. 120">
+                    </div>
+                </div>
+                <div class="calc-result" id="res-change">
+                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                    <button class="copy-btn" data-target="change" aria-label="Copy">Copy</button>
+                </div>
+            </div>
+
+            <!-- 2. Percentage Of -->
+            <div class="pane calc-pane">
+                <h3>2. Percentage Of</h3>
+                <div class="input-group inline-group alg-center">
+                    <span class="inline-text">What is</span>
+                    <input type="number" id="of-part" class="inline-input" placeholder="e.g. 25">
+                    <span class="inline-text">% of</span>
+                    <input type="number" id="of-base" class="inline-input" placeholder="e.g. 100">
+                    <span class="inline-text">?</span>
+                </div>
+                <!-- Presets for Part (%) -->
+                <div class="presets">
+                    <button class="preset-btn" data-target="of-part" data-val="10">10%</button>
+                    <button class="preset-btn" data-target="of-part" data-val="15">15%</button>
+                    <button class="preset-btn" data-target="of-part" data-val="20">20%</button>
+                </div>
+                <div class="calc-result" id="res-of">
+                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                    <button class="copy-btn" data-target="of" aria-label="Copy">Copy</button>
+                </div>
+            </div>
+
+            <!-- 3. Add/Subtract Percentage -->
+            <div class="pane calc-pane">
+                <h3>3. Add/Subtract Percentage</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="addsub-base">Base Value</label>
+                        <input type="number" id="addsub-base" placeholder="e.g. 150">
+                    </div>
+                    <div class="input-field select-wrapper">
+                        <label for="addsub-pct">Percentage (+/-)</label>
+                        <div class="input-with-select">
+                            <select id="addsub-op" aria-label="Add or Subtract">
+                                <option value="add">+</option>
+                                <option value="sub">-</option>
+                            </select>
+                            <input type="number" id="addsub-pct" placeholder="e.g. 20">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="presets">
+                    <button class="preset-btn" data-target="addsub-pct" data-val="10">10%</button>
+                    <button class="preset-btn" data-target="addsub-pct" data-val="15">15%</button>
+                    <button class="preset-btn" data-target="addsub-pct" data-val="20">20%</button>
+                </div>
+                <div class="calc-result" id="res-addsub">
+                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                    <button class="copy-btn" data-target="addsub" aria-label="Copy">Copy</button>
+                </div>
+            </div>
+
+            <!-- 4. Reverse Percentage -->
+            <div class="pane calc-pane">
+                <h3>4. Reverse Percentage (Find Original)</h3>
+                <div class="input-group inline-group alg-center">
+                    <span class="inline-text">If</span>
+                    <input type="number" id="rev-val" class="inline-input" placeholder="e.g. 120">
+                    <span class="inline-text">includes a</span>
+                    <div class="input-with-select inline-input-wrapper">
+                        <select id="rev-op" aria-label="Increase or Decrease">
+                            <option value="inc">Increase</option>
+                            <option value="dec">Decrease</option>
+                        </select>
+                    </div>
+                    <span class="inline-text">of</span>
+                    <input type="number" id="rev-pct" class="inline-input" placeholder="e.g. 20">
+                    <span class="inline-text">%</span>
+                </div>
+                <div class="calc-result" id="res-rev">
+                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                    <button class="copy-btn" data-target="rev" aria-label="Copy">Copy</button>
+                </div>
+            </div>
+
+            <!-- 5. Fraction to Percentage -->
+            <div class="pane calc-pane">
+                <h3>5. Fraction to Percentage</h3>
+                <div class="input-group inline-group alg-center">
+                    <input type="number" id="frac-num" class="inline-input" placeholder="e.g. 3">
+                    <span class="inline-text">/</span>
+                    <input type="number" id="frac-den" class="inline-input" placeholder="e.g. 8">
+                </div>
+                <div class="calc-result" id="res-frac">
+                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                    <button class="copy-btn" data-target="frac" aria-label="Copy">Copy</button>
+                </div>
+            </div>
+
+            <button id="clear-btn" class="clear-btn">Clear All</button>
+
+            <button id="share-btn" class="share-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Share All Results
+            </button>
+        </main>
+
+        <!-- Right Column (Desktop) / Drawer (Mobile): History -->
+        <aside class="history-sidebar" id="history-sidebar">
+            <div class="history-header">
+                <h2>History Log</h2>
+                <button class="history-close-btn" id="history-close" aria-label="Close History">&times;</button>
+            </div>
+            <div class="history-content" id="history-list">
+                <!-- History Items rendered by JS -->
+                <div class="empty-history">No history yet.</div>
+            </div>
+            <button id="clear-history-btn" class="clear-history-btn">Clear History</button>
+        </aside>
+
+    </div>
+
+    <!-- Copy feedback toast -->
+    <div id="toast" class="toast">Copied to clipboard!</div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
