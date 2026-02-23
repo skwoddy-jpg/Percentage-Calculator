@@ -51,6 +51,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const fracDen = document.getElementById('frac-den');
     const resFrac = document.getElementById('res-frac');
 
+    // Ohms Law
+    const ohmsV = document.getElementById('ohms-v');
+    const ohmsR = document.getElementById('ohms-r');
+    const ohmsI = document.getElementById('ohms-i');
+    const ohmsW = document.getElementById('ohms-w');
+
+    // Vape Liquid
+    const vapeVol = document.getElementById('vape-volume');
+    const vapeFlavor = document.getElementById('vape-flavor');
+    const vapeBaseNic = document.getElementById('vape-base-nic');
+    const vapeTargetNic = document.getElementById('vape-target-nic');
+
+    // Temperature
+    const tempC = document.getElementById('temp-c');
+    const tempF = document.getElementById('temp-f');
+    const tempK = document.getElementById('temp-k');
+
+    // Distance
+    const distMi = document.getElementById('dist-mi');
+    const distKm = document.getElementById('dist-km');
+    const distM = document.getElementById('dist-m');
+    const distFt = document.getElementById('dist-ft');
+    const distIn = document.getElementById('dist-in');
+
     // Global State
     let history = JSON.parse(localStorage.getItem('calcHistory')) || [];
     let historyTimeout = null;
@@ -83,6 +107,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Mobile Sidebar Logic ---
     historyBtn.addEventListener('click', () => historySidebar.classList.add('open'));
     historyCloseBtn.addEventListener('click', () => historySidebar.classList.remove('open'));
+
+    // --- Tab Navigation ---
+    const navTabs = document.querySelectorAll('.nav-tab');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    navTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            navTabs.forEach(t => t.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+        });
+    });
 
     // --- History Store ---
     function renderHistory() {
@@ -253,6 +290,100 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ok) pushHistory("Fraction", valT, subT);
     }
 
+    // --- New Calculators ---
+    function calcOhms(e) {
+        let v = parseFloat(ohmsV.value), r = parseFloat(ohmsR.value);
+        let i = parseFloat(ohmsI.value), w = parseFloat(ohmsW.value);
+
+        const vals = [v, r, i, w].filter(x => !isNaN(x)).length;
+        let act = false, valT = '--', subT = '--';
+
+        if (vals >= 2) {
+            let cv, cr, ci, cw;
+            if (!isNaN(v) && !isNaN(r)) { ci = v / r; cw = v * v / r; cv = v; cr = r; }
+            else if (!isNaN(v) && !isNaN(i)) { cr = v / i; cw = v * i; cv = v; ci = i; }
+            else if (!isNaN(v) && !isNaN(w)) { ci = w / v; cr = v * v / w; cv = v; cw = w; }
+            else if (!isNaN(r) && !isNaN(i)) { cv = i * r; cw = i * i * r; cr = r; ci = i; }
+            else if (!isNaN(r) && !isNaN(w)) { cv = Math.sqrt(w * r); ci = Math.sqrt(w / r); cr = r; cw = w; }
+            else if (!isNaN(i) && !isNaN(w)) { cv = w / i; cr = w / (i * i); ci = i; cw = w; }
+
+            if (e && e.target !== ohmsV) ohmsV.value = fNum(cv);
+            if (e && e.target !== ohmsR) ohmsR.value = fNum(cr);
+            if (e && e.target !== ohmsI) ohmsI.value = fNum(ci);
+            if (e && e.target !== ohmsW) ohmsW.value = fNum(cw);
+
+            valT = `${fNum(cw)}W`; subT = `${fNum(cv)}V, ${fNum(ci)}A, ${fNum(cr)}Ω`; act = true;
+        }
+
+        const wrapper = document.getElementById('res-ohms');
+        const ok = updateResultUI(wrapper, wrapper.querySelector('.val'), wrapper.querySelector('.sub'), valT, subT, act);
+        if (ok) pushHistory("Ohm's Law", valT, subT);
+    }
+
+    function calcVape() {
+        const vol = parseFloat(vapeVol.value);
+        const flavPct = parseFloat(vapeFlavor.value) || 0;
+        const baseNic = parseFloat(vapeBaseNic.value) || 0;
+        const targetNic = parseFloat(vapeTargetNic.value) || 0;
+
+        if (!isNaN(vol) && targetNic <= baseNic) {
+            const nicMl = baseNic > 0 ? (targetNic * vol) / baseNic : 0;
+            const flavMl = (flavPct / 100) * vol;
+            const baseMl = vol - nicMl - flavMl;
+
+            if (baseMl >= 0) {
+                document.getElementById('vape-res-nic').textContent = fNum(nicMl) + ' ml';
+                document.getElementById('vape-res-flavor').textContent = fNum(flavMl) + ' ml';
+                document.getElementById('vape-res-base').textContent = fNum(baseMl) + ' ml';
+
+                // Track internally without typical val/sub result pane
+                pushHistory("Vape Liquid", `${fNum(vol)}ml`, `Nic: ${fNum(nicMl)}ml, Flix: ${fNum(flavMl)}ml`);
+            } else {
+                ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = 'Error');
+            }
+        }
+    }
+
+    let tempTimeout, distTimeout;
+
+    function calcTemp(e) {
+        let v = parseFloat(e.target.value);
+        if (isNaN(v)) {
+            tempC.value = ''; tempF.value = ''; tempK.value = '';
+            return;
+        }
+
+        let c, f, k;
+        if (e.target === tempC) { c = v; f = c * 9 / 5 + 32; k = c + 273.15; tempF.value = fNum(f); tempK.value = fNum(k); }
+        else if (e.target === tempF) { f = v; c = (f - 32) * 5 / 9; k = c + 273.15; tempC.value = fNum(c); tempK.value = fNum(k); }
+        else if (e.target === tempK) { k = v; c = k - 273.15; f = c * 9 / 5 + 32; tempC.value = fNum(c); tempF.value = fNum(f); }
+
+        clearTimeout(tempTimeout);
+        tempTimeout = setTimeout(() => { pushHistory("Temperature", `${fNum(c)} °C`, `${fNum(f)} °F / ${fNum(k)} K`); }, 1500);
+    }
+
+    const distRatios = { mi: 1, km: 1.60934, m: 1609.34, ft: 5280, in: 63360 };
+
+    function calcDist(e) {
+        let v = parseFloat(e.target.value);
+        if (isNaN(v)) {
+            [distMi, distKm, distM, distFt, distIn].forEach(inp => inp.value = '');
+            return;
+        }
+
+        const unit = e.target.id.replace('dist-', '');
+        const miles = v / distRatios[unit];
+
+        if (e.target !== distMi) distMi.value = fNum(miles * distRatios.mi);
+        if (e.target !== distKm) distKm.value = fNum(miles * distRatios.km);
+        if (e.target !== distM) distM.value = fNum(miles * distRatios.m);
+        if (e.target !== distFt) distFt.value = fNum(miles * distRatios.ft);
+        if (e.target !== distIn) distIn.value = fNum(miles * distRatios.in);
+
+        clearTimeout(distTimeout);
+        distTimeout = setTimeout(() => { pushHistory("Distance", `${fNum(miles * distRatios.km)} km`, `${fNum(miles)} mi`); }, 1500);
+    }
+
     // --- Listeners ---
     [changePrev, changeNew].forEach(i => i.addEventListener('input', calcChange));
     [ofPart, ofBase].forEach(i => i.addEventListener('input', calcOf));
@@ -260,15 +391,25 @@ document.addEventListener('DOMContentLoaded', () => {
     [revVal, revPct, revOp].forEach(i => i.addEventListener('input', calcRev));
     [fracNum, fracDen].forEach(i => i.addEventListener('input', calcFrac));
 
+    [ohmsV, ohmsR, ohmsI, ohmsW].forEach(i => i.addEventListener('input', calcOhms));
+    [vapeVol, vapeFlavor, vapeBaseNic, vapeTargetNic].forEach(i => i.addEventListener('input', calcVape));
+    [tempC, tempF, tempK].forEach(i => i.addEventListener('input', calcTemp));
+    [distMi, distKm, distM, distFt, distIn].forEach(i => i.addEventListener('input', calcDist));
+
     // Clear functionality
     clearBtn.addEventListener('click', () => {
         document.querySelectorAll('.calculator-container input').forEach(inp => inp.value = '');
         shareBtn.style.display = 'none';
+
         calcChange();
         calcOf();
         calcAddSub();
         calcRev();
         calcFrac();
+        calcOhms();
+        calcVape();
+
+        ['nic', 'flavor', 'base'].forEach(id => document.getElementById(`vape-res-${id}`).textContent = '-- ml');
     });
 
     // Preset functionality

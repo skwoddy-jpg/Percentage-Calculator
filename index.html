@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Percentage Calculator</title>
+    <title>Multi-Calc</title>
     <meta name="theme-color" content="#3b82f6">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon"
@@ -19,10 +19,10 @@
 
     <!-- Top Nav Action Bar -->
     <header class="app-header">
-        <h1>Percentage Calculator</h1>
+        <h1>Multi-Calc</h1>
         <div class="header-actions">
+            <!-- Theme Toggle -->
             <button id="theme-toggle" class="header-btn" title="Toggle Theme" aria-label="Toggle Theme">
-                <!-- SVG Icon set in JS based on theme -->
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" class="theme-icon-light">
                     <circle cx="12" cy="12" r="5"></circle>
@@ -40,6 +40,7 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </button>
+            <!-- History Toggle -->
             <button id="history-toggle" class="header-btn" title="View History" aria-label="View History">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -50,126 +51,270 @@
         </div>
     </header>
 
+    <!-- Navigation Tabs -->
+    <nav class="calc-nav" aria-label="Calculator Categories">
+        <button class="nav-tab active" data-tab="calc-percentages">Percentages</button>
+        <button class="nav-tab" data-tab="calc-ohms">Ohm's Law</button>
+        <button class="nav-tab" data-tab="calc-vape">Vape Liquid</button>
+        <button class="nav-tab" data-tab="calc-temp">Temperature</button>
+        <button class="nav-tab" data-tab="calc-dist">Distance</button>
+    </nav>
+
     <div class="main-layout">
 
         <!-- Left Column: Inputs -->
         <main class="calculator-container">
-            <!-- Reference -->
+            <!-- Reference Field (Always visible across all tabs) -->
             <div class="pane section-pane">
                 <div class="input-field">
                     <label for="reference-val">Reference (Optional)</label>
-                    <input type="text" id="reference-val" placeholder="e.g. Q3 Earnings or Shopping">
+                    <input type="text" id="reference-val" placeholder="e.g. Q3 Earnings / Build 12">
                 </div>
             </div>
 
-            <!-- 1. Percentage Change -->
-            <div class="pane calc-pane">
-                <h3>1. Percentage Change</h3>
-                <div class="input-group">
-                    <div class="input-field">
-                        <label for="change-prev">Previous Value</label>
-                        <input type="number" id="change-prev" placeholder="e.g. 100">
-                    </div>
-                    <div class="input-field">
-                        <label for="change-new">New Value</label>
-                        <input type="number" id="change-new" placeholder="e.g. 120">
-                    </div>
-                </div>
-                <div class="calc-result" id="res-change">
-                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
-                    <button class="copy-btn" data-target="change" aria-label="Copy">Copy</button>
-                </div>
-            </div>
+            <!-- TAB 1: Percentages -->
+            <div id="calc-percentages" class="tab-pane active">
 
-            <!-- 2. Percentage Of -->
-            <div class="pane calc-pane">
-                <h3>2. Percentage Of</h3>
-                <div class="input-group inline-group alg-center">
-                    <span class="inline-text">What is</span>
-                    <input type="number" id="of-part" class="inline-input" placeholder="e.g. 25">
-                    <span class="inline-text">% of</span>
-                    <input type="number" id="of-base" class="inline-input" placeholder="e.g. 100">
-                    <span class="inline-text">?</span>
-                </div>
-                <!-- Presets for Part (%) -->
-                <div class="presets">
-                    <button class="preset-btn" data-target="of-part" data-val="10">10%</button>
-                    <button class="preset-btn" data-target="of-part" data-val="15">15%</button>
-                    <button class="preset-btn" data-target="of-part" data-val="20">20%</button>
-                </div>
-                <div class="calc-result" id="res-of">
-                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
-                    <button class="copy-btn" data-target="of" aria-label="Copy">Copy</button>
-                </div>
-            </div>
-
-            <!-- 3. Add/Subtract Percentage -->
-            <div class="pane calc-pane">
-                <h3>3. Add/Subtract Percentage</h3>
-                <div class="input-group">
-                    <div class="input-field">
-                        <label for="addsub-base">Base Value</label>
-                        <input type="number" id="addsub-base" placeholder="e.g. 150">
+                <!-- 1. Percentage Change -->
+                <div class="pane calc-pane">
+                    <h3>1. Percentage Change</h3>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="change-prev">Previous Value</label>
+                            <input type="number" id="change-prev" placeholder="e.g. 100">
+                        </div>
+                        <div class="input-field">
+                            <label for="change-new">New Value</label>
+                            <input type="number" id="change-new" placeholder="e.g. 120">
+                        </div>
                     </div>
-                    <div class="input-field select-wrapper">
-                        <label for="addsub-pct">Percentage (+/-)</label>
-                        <div class="input-with-select">
-                            <select id="addsub-op" aria-label="Add or Subtract">
-                                <option value="add">+</option>
-                                <option value="sub">-</option>
+                    <div class="calc-result" id="res-change">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="change" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 2. Percentage Of -->
+                <div class="pane calc-pane">
+                    <h3>2. Percentage Of</h3>
+                    <div class="input-group inline-group alg-center">
+                        <span class="inline-text">What is</span>
+                        <input type="number" id="of-part" class="inline-input" placeholder="e.g. 25">
+                        <span class="inline-text">% of</span>
+                        <input type="number" id="of-base" class="inline-input" placeholder="e.g. 100">
+                        <span class="inline-text">?</span>
+                    </div>
+                    <!-- Presets for Part (%) -->
+                    <div class="presets">
+                        <button class="preset-btn" data-target="of-part" data-val="10">10%</button>
+                        <button class="preset-btn" data-target="of-part" data-val="15">15%</button>
+                        <button class="preset-btn" data-target="of-part" data-val="20">20%</button>
+                    </div>
+                    <div class="calc-result" id="res-of">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="of" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 3. Add/Subtract Percentage -->
+                <div class="pane calc-pane">
+                    <h3>3. Add/Subtract Percentage</h3>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="addsub-base">Base Value</label>
+                            <input type="number" id="addsub-base" placeholder="e.g. 150">
+                        </div>
+                        <div class="input-field select-wrapper">
+                            <label for="addsub-pct">Percentage (+/-)</label>
+                            <div class="input-with-select">
+                                <select id="addsub-op" aria-label="Add or Subtract">
+                                    <option value="add">+</option>
+                                    <option value="sub">-</option>
+                                </select>
+                                <input type="number" id="addsub-pct" placeholder="e.g. 20">
+                                <span class="input-suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="presets">
+                        <button class="preset-btn" data-target="addsub-pct" data-val="10">10%</button>
+                        <button class="preset-btn" data-target="addsub-pct" data-val="15">15%</button>
+                        <button class="preset-btn" data-target="addsub-pct" data-val="20">20%</button>
+                    </div>
+                    <div class="calc-result" id="res-addsub">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="addsub" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 4. Reverse Percentage -->
+                <div class="pane calc-pane">
+                    <h3>4. Reverse Percentage (Find Original)</h3>
+                    <div class="input-group inline-group alg-center">
+                        <span class="inline-text">If</span>
+                        <input type="number" id="rev-val" class="inline-input" placeholder="e.g. 120">
+                        <span class="inline-text">includes a</span>
+                        <div class="input-with-select inline-input-wrapper">
+                            <select id="rev-op" aria-label="Increase or Decrease">
+                                <option value="inc">Increase</option>
+                                <option value="dec">Decrease</option>
                             </select>
-                            <input type="number" id="addsub-pct" placeholder="e.g. 20">
-                            <span class="input-suffix">%</span>
+                        </div>
+                        <span class="inline-text">of</span>
+                        <input type="number" id="rev-pct" class="inline-input" placeholder="e.g. 20">
+                        <span class="inline-text">%</span>
+                    </div>
+                    <div class="calc-result" id="res-rev">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="rev" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 5. Fraction to Percentage -->
+                <div class="pane calc-pane">
+                    <h3>5. Fraction to Percentage</h3>
+                    <div class="input-group inline-group alg-center">
+                        <input type="number" id="frac-num" class="inline-input" placeholder="e.g. 3">
+                        <span class="inline-text">/</span>
+                        <input type="number" id="frac-den" class="inline-input" placeholder="e.g. 8">
+                    </div>
+                    <div class="calc-result" id="res-frac">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="frac" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+            </div> <!-- End Percentages Tab -->
+
+            <!-- TAB 2: Ohm's Law -->
+            <div id="calc-ohms" class="tab-pane">
+                <div class="pane calc-pane">
+                    <h3>Ohm's Law</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Enter any two values
+                        to calculate the others.</p>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="ohms-v">Voltage (V)</label>
+                            <input type="number" id="ohms-v" placeholder="e.g. 5">
+                        </div>
+                        <div class="input-field">
+                            <label for="ohms-r">Resistance (Ω)</label>
+                            <input type="number" id="ohms-r" placeholder="e.g. 10">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="ohms-i">Current (A)</label>
+                            <input type="number" id="ohms-i" placeholder="e.g. 0.5">
+                        </div>
+                        <div class="input-field">
+                            <label for="ohms-w">Power (W)</label>
+                            <input type="number" id="ohms-w" placeholder="e.g. 2.5">
+                        </div>
+                    </div>
+                    <div class="calc-result" id="res-ohms" style="margin-top: 1rem;">
+                        <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
+                        <button class="copy-btn" data-target="ohms" aria-label="Copy">Copy</button>
+                    </div>
+                </div>
+            </div> <!-- End Ohms Tab -->
+
+            <!-- TAB 3: Vape Liquid -->
+            <div id="calc-vape" class="tab-pane">
+                <div class="pane calc-pane">
+                    <h3>Vape Liquid Mixer</h3>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="vape-volume">Target Volume (ml)</label>
+                            <input type="number" id="vape-volume" placeholder="e.g. 60">
+                        </div>
+                        <div class="input-field">
+                            <label for="vape-flavor">Flavor (%)</label>
+                            <input type="number" id="vape-flavor" placeholder="e.g. 15">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="vape-base-nic">Base Nic (mg/ml)</label>
+                            <input type="number" id="vape-base-nic" placeholder="e.g. 72">
+                        </div>
+                        <div class="input-field">
+                            <label for="vape-target-nic">Target Nic (mg/ml)</label>
+                            <input type="number" id="vape-target-nic" placeholder="e.g. 3">
+                        </div>
+                    </div>
+
+                    <div class="pane" style="margin-top: 1rem; padding: 1rem; background: var(--res-bg);">
+                        <h4 style="margin-bottom: 0.5rem;">Recipe:</h4>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="color: var(--text-muted);">Nicotine Base:</span>
+                            <span id="vape-res-nic" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="color: var(--text-muted);">Flavor Concentrate:</span>
+                            <span id="vape-res-flavor" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">PG/VG Base:</span>
+                            <span id="vape-res-base" style="font-weight: 600; color: var(--text-main);">-- ml</span>
+                        </div>
+                    </div>
+                    <div class="calc-result" id="res-vape" style="display: none;">
+                        <span class="val">--</span><span class="sub">--</span>
+                    </div>
+                </div>
+            </div> <!-- End Vape Tab -->
+
+            <!-- TAB 4: Temperature -->
+            <div id="calc-temp" class="tab-pane">
+                <div class="pane calc-pane">
+                    <h3>Temperature Converter</h3>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="temp-c">Celsius (°C)</label>
+                            <input type="number" id="temp-c" placeholder="e.g. 25">
+                        </div>
+                        <div class="input-field">
+                            <label for="temp-f">Fahrenheit (°F)</label>
+                            <input type="number" id="temp-f" placeholder="e.g. 77">
+                        </div>
+                        <div class="input-field">
+                            <label for="temp-k">Kelvin (K)</label>
+                            <input type="number" id="temp-k" placeholder="e.g. 298.15">
                         </div>
                     </div>
                 </div>
-                <div class="presets">
-                    <button class="preset-btn" data-target="addsub-pct" data-val="10">10%</button>
-                    <button class="preset-btn" data-target="addsub-pct" data-val="15">15%</button>
-                    <button class="preset-btn" data-target="addsub-pct" data-val="20">20%</button>
-                </div>
-                <div class="calc-result" id="res-addsub">
-                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
-                    <button class="copy-btn" data-target="addsub" aria-label="Copy">Copy</button>
-                </div>
-            </div>
+            </div> <!-- End Temp Tab -->
 
-            <!-- 4. Reverse Percentage -->
-            <div class="pane calc-pane">
-                <h3>4. Reverse Percentage (Find Original)</h3>
-                <div class="input-group inline-group alg-center">
-                    <span class="inline-text">If</span>
-                    <input type="number" id="rev-val" class="inline-input" placeholder="e.g. 120">
-                    <span class="inline-text">includes a</span>
-                    <div class="input-with-select inline-input-wrapper">
-                        <select id="rev-op" aria-label="Increase or Decrease">
-                            <option value="inc">Increase</option>
-                            <option value="dec">Decrease</option>
-                        </select>
+            <!-- TAB 5: Distance -->
+            <div id="calc-dist" class="tab-pane">
+                <div class="pane calc-pane">
+                    <h3>Distance Converter</h3>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="dist-mi">Miles (mi)</label>
+                            <input type="number" id="dist-mi" placeholder="e.g. 5">
+                        </div>
+                        <div class="input-field">
+                            <label for="dist-km">Kilometers (km)</label>
+                            <input type="number" id="dist-km" placeholder="e.g. 8.04">
+                        </div>
                     </div>
-                    <span class="inline-text">of</span>
-                    <input type="number" id="rev-pct" class="inline-input" placeholder="e.g. 20">
-                    <span class="inline-text">%</span>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="dist-m">Meters (m)</label>
+                            <input type="number" id="dist-m" placeholder="e.g. 8046.72">
+                        </div>
+                        <div class="input-field">
+                            <label for="dist-ft">Feet (ft)</label>
+                            <input type="number" id="dist-ft" placeholder="e.g. 26400">
+                        </div>
+                        <div class="input-field">
+                            <label for="dist-in">Inches (in)</label>
+                            <input type="number" id="dist-in" placeholder="e.g. 316800">
+                        </div>
+                    </div>
                 </div>
-                <div class="calc-result" id="res-rev">
-                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
-                    <button class="copy-btn" data-target="rev" aria-label="Copy">Copy</button>
-                </div>
-            </div>
-
-            <!-- 5. Fraction to Percentage -->
-            <div class="pane calc-pane">
-                <h3>5. Fraction to Percentage</h3>
-                <div class="input-group inline-group alg-center">
-                    <input type="number" id="frac-num" class="inline-input" placeholder="e.g. 3">
-                    <span class="inline-text">/</span>
-                    <input type="number" id="frac-den" class="inline-input" placeholder="e.g. 8">
-                </div>
-                <div class="calc-result" id="res-frac">
-                    <div class="res-text"><span class="val">--</span> <span class="sub">--</span></div>
-                    <button class="copy-btn" data-target="frac" aria-label="Copy">Copy</button>
-                </div>
-            </div>
+            </div> <!-- End Dist Tab -->
 
             <button id="clear-btn" class="clear-btn">Clear All</button>
 
